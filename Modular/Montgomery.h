@@ -1,17 +1,15 @@
-#pragma once
-
-#include<cstdint>
-
 using u32 = uint32_t;
 using u64 = uint64_t;
+using u128 = __uint128_t;
 
 struct Montgomery {
-    u32 mod, mod_inv;
+    u32 mod, mod_inv, one;
 
     Montgomery(u32 mod) : mod(mod), mod_inv(1) {
         for (int i = 0; i < 5; ++i) {
             mod_inv *= 2 - mod * mod_inv;
         }
+        one = (1ull << 32) % mod;
     }
     u32 norm(u32 x) const {
         return x < x - mod ? x : x - mod;
@@ -31,5 +29,60 @@ struct Montgomery {
     }
     u32 mul(u32 x, u32 y) const {
         return reduce((u64)x * y);
+    }
+    u32 power(u32 a, u64 b) {
+        u64 ret = one;
+        for (; b; b >>= 1, a = mul(a, a)) {
+            if (b & 1) ret = mul(ret, a);
+        }
+        return ret;
+    }
+    u32 inv(u32 x) {
+        return power(x, mod - 2);
+    }
+    u32 div(u32 x, u32 y) {
+        return mul(x, inv(y));
+    }
+};
+struct Montgomery64 {
+    u64 mod, mod_inv, one;
+
+    Montgomery64(u64 mod) : mod(mod), mod_inv(1) {
+        for (int i = 0; i < 6; ++i) {
+            mod_inv *= 2 - mod * mod_inv;
+        }
+        one = ((u128)1 << 64) % mod;
+    }
+    u64 norm(u64 x) const {
+        return x < x - mod ? x : x - mod;
+    }
+    u64 transform(u64 x) const {
+        return ((u128)x << 64) % mod;
+    }
+    u64 reduce(u128 x) const {
+        u64 m = (u64(x) * mod_inv * u128(mod)) >> 64;
+        return norm((x >> 64) + mod - m);
+    }
+    u64 add(u64 x, u64 y) const {
+        return x + y >= mod ? x + y - mod : x + y;
+    }
+    u64 sub(u64 x, u64 y) const {
+        return x >= y ? x - y : x + mod - y;
+    }
+    u64 mul(u64 x, u64 y) const {
+        return reduce((u128)x * y);
+    }
+    u64 power(u64 a, u64 b) {
+        u128 ret = one;
+        for (; b; b >>= 1, a = mul(a, a)) {
+            if (b & 1) ret = mul(ret, a);
+        }
+        return ret;
+    }
+    u64 inv(u64 x) {
+        return power(x, mod - 2);
+    }
+    u64 div(u64 x, u64 y) {
+        return mul(x, inv(y));
     }
 };
