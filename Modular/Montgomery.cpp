@@ -1,6 +1,4 @@
-#pragma once
-
-#include<cstdint>
+#include<bits/stdc++.h>
 
 using u32 = uint32_t;
 using u64 = uint64_t;
@@ -33,3 +31,10 @@ struct Montgomery {
         return reduce((u64)x * y);
     }
 };
+
+const int MOD = 1e9 + 7;
+Montgomery mt(MOD);
+
+int main() {
+    std::cout << mt.reduce(mt.add(mt.transform(5), mt.mul(mt.transform(2), mt.transform(3))));
+}

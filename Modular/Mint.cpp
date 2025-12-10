@@ -1,5 +1,3 @@
-#pragma once
-
 #include<iostream>
 
 using ll = long long;
@@ -74,3 +72,9 @@ struct ModInt {
         return x;
     }
 };
+
+using Mint = ModInt<998244353>;
+
+int main() {
+    std::cout << Mint(2) / Mint(2);
+}
