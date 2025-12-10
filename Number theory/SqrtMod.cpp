@@ -1,20 +1,16 @@
-#pragma once
-
-#include<cstdint>
-#include<random>
-#include<chrono>
-#include<cassert>
+#include<bits/stdc++.h>
 
 using u32 = uint32_t;
 using u64 = uint64_t;
 
 struct Montgomery {
-    u32 mod, mod_inv;
+    u32 mod, mod_inv, one;
 
     Montgomery(u32 mod) : mod(mod), mod_inv(1) {
         for (int i = 0; i < 5; ++i) {
             mod_inv *= 2 - mod * mod_inv;
         }
+        one = (u64(1) << 32) % mod;
     }
     u32 norm(u32 x) const {
         return x < x - mod ? x : x - mod;
@@ -37,30 +33,47 @@ struct Montgomery {
     }
 };
 
-std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
+std::random_device rd;
+std::mt19937 rng(rd());
+
 int sqrt_mod(int x, int p) {
     if (x == 0) return 0;
     if (p == 2) return 1;
     Montgomery mt(p);
-    int one = mt.transform(1);
+    auto legendre = [&](int y) -> int {
+        int ret = mt.one;
+        for (int k = (p - 1) / 2; k; k >>= 1, y = mt.mul(y, y)) {
+            if (k & 1) ret = mt.mul(ret, y);
+        }
+        return ret;
+    };
+    x = mt.transform(x);
+    if (legendre(x) != mt.one) return -1;
     int a, b;
-    while (true) {
+    do {
         a = rng() % (p - 1) + 1;
         b = mt.sub(mt.mul(a, a), x);
-        int k = (p - 1) / 2, ret = one;
-        for (int x = b; k; k >>= 1, x = mt.mul(x, x)) {
-            if (k & 1) ret = mt.mul(ret, x);
-        }
-        if (ret != one) break;
-    }
+    } while (legendre(b) == mt.one);
+    if (b == 0) return mt.reduce(a);
     auto mul = [&](std::pair<int, int> x, std::pair<int, int> y) -> std::pair<int, int> {
         return {mt.add(mt.mul(x.first, y.first), mt.mul(b, mt.mul(x.second, y.second))), mt.add(mt.mul(x.second, y.first), mt.mul(x.first, y.second))};
     };
     int k = (p + 1) / 2;
-    std::pair<int, int> ret = {1, 0};
-    for (std::pair<int, int> x = {a, 1}; k; k >>= 1, x = mul(x, x)) {
+    std::pair<int, int> ret = {mt.one, 0};
+    for (std::pair<int, int> x = {a, mt.one}; k; k >>= 1, x = mul(x, x)) {
         if (k & 1) ret = mul(ret, x);
     }
     assert(ret.second == 0);
     return mt.reduce(ret.first);
+}
+
+//solution of https://judge.yosupo.jp/problem/sqrt_mod
+int main() {
+    int tests;
+    std::cin >> tests;
+    while (tests--) {
+        int y, p;
+        std::cin >> y >> p;
+        std::cout << sqrt_mod(y, p) << '\n';
+    }
 }
