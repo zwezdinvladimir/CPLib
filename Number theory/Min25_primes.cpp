@@ -20,8 +20,9 @@ R min25_primes(ll n, std::function<R(ll)> f, std::function<R(ll)> pref) {
     for (ll p = 2; p * p <= n; ++p) {
         if (_dp[p - 2] != _dp[p - 1]) {
             R vp = _dp[p - 2], fp = f(p);
+            double ip = 1.0 / p;
             for (int i = 0; i < v.size() && v[i] >= p * p; ++i) {
-                dp(v[i]) -= (dp(v[i] / p) - vp) * fp;
+                dp(v[i]) -= (dp(v[i] * ip + 1e-6) - vp) * fp;
             }
         }
     }
