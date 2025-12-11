@@ -35,7 +35,7 @@ struct Montgomery {
     u32 power(u32 x, u64 y) {
         u32 ret = one;
         for (; y; y >>= 1, x = mul(x, x)) {
-            if (ret & 1) ret = mul(ret, x);
+            if (y & 1) ret = mul(ret, x);
         }
     }
     u32 inv(u32 x) {
@@ -61,7 +61,7 @@ struct Montgomery64 {
         return ((u128)x << 64) % mod;
     }
     u64 reduce(u128 x) const {
-        u32 m = (u64(x) * mod_inv * u128(mod)) >> 64;
+        u64 m = (u64(x) * mod_inv * u128(mod)) >> 64;
         return norm((x >> 64) + mod - m);
     }
     u64 add(u64 x, u64 y) const {
@@ -76,8 +76,9 @@ struct Montgomery64 {
     u64 power(u64 x, u64 y) {
         u64 ret = one;
         for (; y; y >>= 1, x = mul(x, x)) {
-            if (ret & 1) ret = mul(ret, x);
+            if (y & 1) ret = mul(ret, x);
         }
+        return ret;
     }
     u64 inv(u64 x) {
         return power(x, mod - 2);
