@@ -65,7 +65,6 @@ bool is_prime(u64 n) {
     return true;
 }
 
-//solution of https://judge.yosupo.jp/problem/primality_test
 int main() {
     int tests;
     std::cin >> tests;

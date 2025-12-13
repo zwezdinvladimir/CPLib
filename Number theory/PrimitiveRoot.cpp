@@ -117,7 +117,6 @@ u64 primitive_root(u64 p) {
     }
 }
 
-//solution of https://judge.yosupo.jp/problem/primitive_root
 int main() {
     int tests;
     std::cin >> tests;

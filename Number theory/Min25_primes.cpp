@@ -29,7 +29,6 @@ R min25_primes(ll n, std::function<R(ll)> f, std::function<R(ll)> pref) {
     return dp(n);
 }
 
-//solution of https://judge.yosupo.jp/problem/counting_primes
 int main() {
     ll n;
     std::cin >> n;

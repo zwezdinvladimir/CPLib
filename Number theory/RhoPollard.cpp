@@ -101,7 +101,6 @@ std::vector<std::pair<u64, int>> factorize(u64 n) {
     return std::vector<std::pair<u64, int>>(mp.begin(), mp.end());
 }
 
-//solution of https://judge.yosupo.jp/problem/factorize
 int main() {
     int tests;
     std::cin >> tests;

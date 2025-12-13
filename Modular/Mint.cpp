@@ -5,6 +5,7 @@ using ll = long long;
 template<int MOD>
 struct ModInt {
  public:
+    int x = 0;
     ModInt(int x = 0) : x(norm(x)) {}
     int val() const {
         return x;
@@ -65,7 +66,6 @@ struct ModInt {
     }
 
  private:
-    int x = 0;
     int norm(int x) {
         if (x < 0) x += MOD;
         if (x >= MOD) x -= MOD;

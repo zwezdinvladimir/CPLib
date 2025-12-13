@@ -67,7 +67,6 @@ int sqrt_mod(int x, int p) {
     return mt.reduce(ret.first);
 }
 
-//solution of https://judge.yosupo.jp/problem/sqrt_mod
 int main() {
     int tests;
     std::cin >> tests;
