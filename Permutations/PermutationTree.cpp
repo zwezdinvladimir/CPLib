@@ -141,7 +141,7 @@ struct PermutationTree {
     }
 };
 
-//solution of https://codeforces.com/contest/526/problem/F
+//https://codeforces.com/contest/526/submission/352587477
 int main() {
     std::cin.tie(nullptr)->sync_with_stdio(false);
 

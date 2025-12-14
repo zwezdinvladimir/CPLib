@@ -138,7 +138,7 @@ struct PermutationBasis {
     }
 };
 
-//solution of https://codeforces.com/gym/421334/problem/A
+//https://codeforces.com/gym/421334/submission/352886756
 int main() {
     std::cin.tie(nullptr)->sync_with_stdio(false);
 
