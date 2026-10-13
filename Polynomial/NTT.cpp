@@ -72,6 +72,10 @@ struct ModInt {
         return x;
     }
 };
+template<int MOD>
+bool operator==(const ModInt<MOD>& lhs, const ModInt<MOD>& rhs) {
+    return lhs.val() == rhs.val();
+}
 
 const int MOD = 998244353;
 using Mint = ModInt<MOD>;
@@ -477,6 +481,47 @@ mat<T> operator*(mat<T> x, mat<T> y) {
     return ret;
 }
 
+mat<Poly> operator*(mat<Poly> x, mat<Poly> y) {
+    int msz = 0;
+    for (int i = 0; i < 2; ++i) {
+        for (int j = 0; j < 2; ++j) {
+            for (int k = 0; k < 2; ++k) {
+                msz = std::max(msz, x[i][k].size() + y[k][j].size() - 1);
+            }
+        }
+    }
+    int sz = 1;
+    while (sz < msz) sz <<= 1;
+    mat<std::vector<Mint>> a, b, c;
+    for (int i = 0; i < 2; ++i) {
+        for (int j = 0; j < 2; ++j) {
+            a[i][j] = x[i][j].to_vec();
+            b[i][j] = y[i][j].to_vec();
+            a[i][j].resize(sz, 0);
+            b[i][j].resize(sz, 0);
+            c[i][j].assign(sz, 0);
+            dft(a[i][j]), dft(b[i][j]);
+        }
+    }
+    for (int i = 0; i < 2; ++i) {
+        for (int j = 0; j < 2; ++j) {
+            for (int k = 0; k < 2; ++k) {
+                for (int s = 0; s < sz; ++s) {
+                    c[i][j][s] += a[i][k][s] * b[k][j][s];
+                }
+            }
+        }
+    }
+    mat<Poly> z;
+    for (int i = 0; i < 2; ++i) {
+        for (int j = 0; j < 2; ++j) {
+            idft(c[i][j]);
+            while (c[i][j].size() && c[i][j].back() == Mint(0)) c[i][j].pop_back();
+            z[i][j] = Poly(c[i][j]);
+        }
+    }
+    return z;
+}
 
 mat<Poly> half_gcd(Poly A, Poly B) {
     A.normalize(), B.normalize();
